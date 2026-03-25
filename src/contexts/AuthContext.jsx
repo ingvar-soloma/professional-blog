@@ -9,7 +9,7 @@ import { auth, googleProvider } from '../lib/firebase';
 const AuthContext = createContext();
 
 // Whitelist of users who can access admin features
-const ADMIN_EMAILS = ['ingvar.soloma@gmail.com'];
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS || '').split(',').map(email => email.trim());
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

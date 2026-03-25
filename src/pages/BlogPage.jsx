@@ -15,14 +15,15 @@ export default function BlogPage() {
       try {
         const q = query(
           collection(db, 'posts'),
-          where('is_hidden', '==', false),
           orderBy('created_at', 'desc')
         );
         const querySnapshot = await getDocs(q);
-        const fetchedPosts = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const fetchedPosts = querySnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }))
+          .filter(post => !post.is_hidden);
         setPosts(fetchedPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);

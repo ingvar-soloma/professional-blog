@@ -3,6 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import ReactMarkdown from 'react-markdown';
+import CodeSlide from '../components/common/CodeSlide';
+import { Helmet } from 'react-helmet-async';
+import { formatDistanceToNow, parseISO, isValid } from 'date-fns';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -64,7 +67,6 @@ export default function PostDetails() {
 
   const handleShareOnLinkedIn = () => {
     const url = encodeURIComponent(window.location.href);
-    const title = encodeURIComponent(post.title);
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
   };
 
@@ -79,8 +81,22 @@ export default function PostDetails() {
 
   if (!post) return null;
 
+  // Defensive date processing
+  const postDate = parseISO(post.date);
+  const isDateValid = isValid(postDate);
+
   return (
     <article className="max-w-4xl mx-auto space-y-12">
+      <Helmet>
+        <title>{post.title} | Ihor Solomianyi</title>
+        <meta name="description" content={post.excerpt || post.content.substring(0, 160)} />
+        <meta property="og:title" content={post.title} />
+        <meta property="og:description" content={post.excerpt || post.content.substring(0, 160)} />
+        <meta property="og:type" content="article" />
+        <meta property="article:published_time" content={post.date} />
+        <meta property="article:author" content="Ihor Solomianyi" />
+      </Helmet>
+
       <button 
         onClick={() => navigate('/blog')}
         className="flex items-center gap-2 text-indigo-600 font-bold uppercase text-[10px] tracking-widest hover:gap-4 transition-all"
@@ -102,9 +118,13 @@ export default function PostDetails() {
         </h1>
 
         <div className="flex flex-wrap items-center gap-6 pt-6 border-t border-gray-100 dark:border-slate-800 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" title={post.date}>
             <CalendarIcon size={14} className="text-indigo-400" />
-            <span>{post.date}</span>
+            <span>
+              {isDateValid 
+                ? formatDistanceToNow(postDate, { addSuffix: true }) 
+                : post.date}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <Clock size={14} className="text-indigo-400" />
@@ -127,8 +147,55 @@ export default function PostDetails() {
         </div>
       </div>
 
-      <div className="prose prose-lg dark:prose-invert prose-indigo prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight max-w-none text-gray-600 dark:text-gray-300 font-medium">
-        <ReactMarkdown>{post.content}</ReactMarkdown>
+      <div className="prose prose-lg dark:prose-invert prose-indigo prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-pre:p-0 max-w-none text-gray-600 dark:text-gray-300 font-medium">
+        <ReactMarkdown
+          components={{
+            pre: ({ children }) => <>{children}</>,
+            code({ node, inline, className, children, ...props }) {
+              const match = /language-([\w-]+)/.exec(className || '');
+              const language = match ? match[1] : '';
+              
+              if (!inline && (language === 'slide-deck' || language === 'slidedeck')) {
+                try {
+                  const rawContent = String(children).trim();
+                  // More robust JSON extraction in case of markdown artifacts
+                  const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+                  const config = JSON.parse(jsonMatch ? jsonMatch[0] : rawContent);
+                  
+                  return (
+                    <div className="my-14 w-full flex flex-col items-center overflow-x-visible">
+                       <div className="w-full max-w-[850px] transform scale-[0.85] sm:scale-100 origin-center transition-all duration-500">
+                         <CodeSlide {...config} />
+                       </div>
+                    </div>
+                  );
+                } catch (e) {
+                  console.warn("Slide configuration error:", e);
+                  return (
+                    <div className="my-8 p-6 bg-red-50 dark:bg-red-900/10 border border-red-500/20 rounded-3xl">
+                      <p className="text-red-500 text-xs font-black uppercase mb-4">Architecture Rendering Failed</p>
+                      <pre className="overflow-x-auto text-[10px] opacity-70">
+                        <code className={className} {...props}>{children}</code>
+                      </pre>
+                    </div>
+                  );
+                }
+              }
+              
+              return !inline ? (
+                <pre className="p-3 bg-gray-50 dark:bg-slate-950 rounded-2xl overflow-x-auto text-xs">
+                  <code className={className} {...props}>{children}</code>
+                </pre>
+              ) : (
+                <code className="px-1.5 py-0.5 bg-gray-100 dark:bg-slate-800 rounded font-bold text-indigo-600 dark:text-indigo-400" {...props}>
+                  {children}
+                </code>
+              );
+            }
+          }}
+        >
+          {post.content}
+        </ReactMarkdown>
       </div>
 
       <footer className="mt-20 pt-12 border-t border-gray-100 dark:border-slate-800 space-y-12">
