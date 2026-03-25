@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import ReactMarkdown from 'react-markdown';
 import CodeSlide from '../components/common/CodeSlide';
@@ -17,6 +17,20 @@ import {
   Share2,
   Loader2
 } from 'lucide-react';
+
+// Fingerprint utility for unique views
+const getFingerprint = async () => {
+  try {
+    const data = navigator.userAgent + screen.width + Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const msgUint8 = new TextEncoder().encode(data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) {
+    // Fallback to simpler ID if crypto fails
+    return btoa(navigator.userAgent).substring(0, 32);
+  }
+};
 
 const LinkedinIcon = ({ size = 24, ...props }) => (
   <svg
@@ -47,10 +61,29 @@ export default function PostDetails() {
           const data = docSnap.data();
           setPost({ id: docSnap.id, ...data });
           
-          // Increment views
-          await updateDoc(docRef, {
-            views: increment(1)
-          });
+          // Unique View Tracking
+          try {
+            const fingerprint = await getFingerprint();
+            const viewLogRef = doc(db, 'view_logs', `${id}_${fingerprint}`);
+            const viewLogSnap = await getDoc(viewLogRef);
+            
+            if (!viewLogSnap.exists()) {
+              await setDoc(viewLogRef, {
+                postId: id,
+                fingerprint,
+                timestamp: serverTimestamp()
+              });
+              
+              await updateDoc(docRef, {
+                views: increment(1)
+              });
+              
+              // Local update for immediate feedback
+              setPost(prev => prev ? { ...prev, views: (prev.views || 0) + 1 } : null);
+            }
+          } catch (trackError) {
+            console.warn("View tracking failed:", trackError);
+          }
         } else {
           console.error("No such post!");
           navigate('/blog');

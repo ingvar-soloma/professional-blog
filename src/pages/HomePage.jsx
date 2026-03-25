@@ -16,28 +16,28 @@ import { Link } from 'react-router-dom';
 
 const cognitiveStats = [
   {
-    title: "Systemic Constructor",
+    title: "Systemic Orchestration",
     icon: Network,
     color: "indigo",
-    desc: "I perceive products as networks of interconnections, integrating solutions without disrupting system integrity."
+    desc: "Designing products as high-integrity networks where every interconnection is mathematically justified."
   },
   {
-    title: "Aphantasic Modeling",
+    title: "Zero-Visual Modeling",
     icon: Box,
     color: "emerald",
-    desc: "Working in a clean space of logic, providing an advantage in complex Backend development and RAG data processing."
+    desc: "Leveraging Aphantasia as a competitive advantage for complex Backend & RAG data-structure processing."
   },
   {
-    title: "Verbal-Logical Focus",
+    title: "Logic-Driven Development",
     icon: MessageSquare,
     color: "blue",
-    desc: "Operating with assertions and internal dialogue, strictly focused on the core algorithm and resilient to visual noise."
+    desc: "Strictly internal dialogue-based engineering, resilient to visual noise and focused on core algorithms."
   },
   {
-    title: "Kinesthetic Feedback",
+    title: "Immediate Validation",
     icon: Terminal,
     color: "amber",
-    desc: "Validating ideas through real-time code interaction, ensuring rapid transition from hypothesis to working features."
+    desc: "Rapid transition from hypothesis to functional features through continuous real-time code interaction."
   }
 ];
 
@@ -54,12 +54,12 @@ export default function HomePage() {
             </span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight">
-            Engineering <span className="text-indigo-600 dark:text-indigo-400">Insight</span> Through Logic.
+          <h1 className="text-5xl md:text-7xl font-black text-gray-900 dark:text-white leading-[1.1] tracking-tight uppercase">
+            Architecting <span className="text-indigo-600 dark:text-indigo-400">Systems</span> Through Pure Logic.
           </h1>
           
           <p className="text-xl text-gray-500 dark:text-gray-400 font-medium max-w-2xl leading-relaxed">
-            I document the intersection of systemic architecture, scalable AI ecosystems, and deterministic engineering practices. This is where I articulate the algorithms of my thinking process.
+            I document the intersection of complex system architecture, LLM-orchestration, and deterministic engineering. This is my documentation of the algorithms behind the code.
           </p>
 
           <div className="flex flex-wrap justify-center md:justify-start gap-4">
@@ -89,9 +89,9 @@ export default function HomePage() {
       {/* Featured CTA */}
       <section className="bg-white dark:bg-slate-900/50 rounded-[3rem] p-12 md:p-20 border border-gray-100 dark:border-slate-800 shadow-2xl dark:shadow-none relative overflow-hidden group text-center">
          <div className="space-y-6">
-            <h2 className="text-3xl font-black uppercase tracking-tight">The Architect's Journal</h2>
+            <h2 className="text-3xl font-black uppercase tracking-tight">Registry of Logic</h2>
             <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto font-medium">
-               Access my public registry of systemic solutions, technical deep-dives, and cognitive engineering insights.
+               Technical deep-dives into LLM ecosystems, high-load infrastructure, and the physics of thought.
             </p>
             <Link to="/blog" className="inline-flex items-center gap-2 text-indigo-600 font-black uppercase tracking-widest text-sm hover:gap-4 transition-all">
                Browse All Insights <ArrowRight size={18} />

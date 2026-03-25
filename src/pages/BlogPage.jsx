@@ -49,7 +49,7 @@ export default function BlogPage() {
                 <Layers className="text-indigo-600 w-10 h-10 md:w-16 md:h-16" /> Architectural <span className="text-indigo-600">Registry</span>
              </h1>
              <p className="text-gray-500 dark:text-gray-400 font-medium text-lg">
-                Technical deep-dives into LLM ecosystems, scalable infrastructure, and cognitive engineering.
+                Technical deep-dives into LLM ecosystems, high-load infrastructure, and the physics of thought.
              </p>
           </div>
           
@@ -86,7 +86,7 @@ export default function BlogPage() {
             onClick={() => setSearchTerm('')}
             className="text-indigo-600 font-black text-xs uppercase tracking-widest hover:underline"
           >
-            Reset filter
+            RE-INITIALIZE SEARCH
           </button>
         </div>
       )}
