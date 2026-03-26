@@ -4,6 +4,8 @@ import { db } from '../lib/firebase';
 import BlogCard from '../components/BlogCard';
 import { Layers, Search, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+
 
 export default function BlogPage() {
   const [posts, setPosts] = useState([]);
@@ -42,7 +44,12 @@ export default function BlogPage() {
 
   return (
     <div className="space-y-12">
+      <Helmet>
+        <title>Architectural Registry | Ihor Solomianyi</title>
+        <meta name="description" content="Technical deep-dives into LLM ecosystems, high-load infrastructure, and the physics of thought. Explore the registry of logic." />
+      </Helmet>
       <header className="space-y-6">
+
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-2">
              <h1 className="text-4xl md:text-6xl font-black text-gray-900 dark:text-white uppercase tracking-tight flex items-center gap-4">
@@ -74,7 +81,7 @@ export default function BlogPage() {
       ) : filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filteredPosts.map(post => (
-            <Link key={post.id} to={`/blog/${post.id}`}>
+            <Link key={post.id} to={`/blog/${post.slug || post.id}`}>
               <BlogCard post={post} />
             </Link>
           ))}

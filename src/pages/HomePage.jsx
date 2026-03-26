@@ -13,6 +13,8 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
+
 
 const cognitiveStats = [
   {
@@ -44,7 +46,14 @@ const cognitiveStats = [
 export default function HomePage() {
   return (
     <div className="space-y-32">
+      <Helmet>
+        <title>Ihor Solomianyi | Engineering Engine & Professional Blog</title>
+        <meta name="description" content="Senior Architect & AI Engineer documenting the intersection of complex system architecture, LLM-orchestration, and deterministic engineering." />
+        <meta property="og:title" content="Ihor Solomianyi | Engineering Engine" />
+        <meta property="og:description" content="Architecting systems through pure logic. Explore insights into LLM ecosystems and high-load architecture." />
+      </Helmet>
       {/* Hero Section */}
+
       <section className="flex flex-col md:flex-row items-center gap-16">
         <div className="flex-1 space-y-8 text-center md:text-left">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-full shadow-sm">

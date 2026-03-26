@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc, updateDoc, increment, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, increment, setDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
+
 import { db } from '../lib/firebase';
 import ReactMarkdown from 'react-markdown';
 import CodeSlide from '../components/common/CodeSlide';
@@ -46,7 +47,8 @@ const LinkedinIcon = ({ size = 24, ...props }) => (
 );
 
 export default function PostDetails() {
-  const { id } = useParams();
+  const { slug } = useParams();
+
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -54,22 +56,41 @@ export default function PostDetails() {
   useEffect(() => {
     async function fetchPost() {
       try {
-        const docRef = doc(db, 'posts', id);
-        const docSnap = await getDoc(docRef);
+        let docSnap = null;
+        let postData = null;
+        let postId = null;
+
+        // Try to find by slug
+        const q = query(collection(db, 'posts'), where('slug', '==', slug));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const docRes = querySnapshot.docs[0];
+          postData = docRes.data();
+          postId = docRes.id;
+        } else {
+          // Fallback to ID for backward compatibility
+          const docRef = doc(db, 'posts', slug);
+          const docRes = await getDoc(docRef);
+          if (docRes.exists()) {
+            postData = docRes.data();
+            postId = docRes.id;
+          }
+        }
         
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setPost({ id: docSnap.id, ...data });
+        if (postData) {
+          setPost({ id: postId, ...postData });
+          const docRef = doc(db, 'posts', postId);
           
           // Unique View Tracking
           try {
             const fingerprint = await getFingerprint();
-            const viewLogRef = doc(db, 'view_logs', `${id}_${fingerprint}`);
+            const viewLogRef = doc(db, 'view_logs', `${postId}_${fingerprint}`);
             const viewLogSnap = await getDoc(viewLogRef);
             
             if (!viewLogSnap.exists()) {
               await setDoc(viewLogRef, {
-                postId: id,
+                postId,
                 fingerprint,
                 timestamp: serverTimestamp()
               });
@@ -96,7 +117,8 @@ export default function PostDetails() {
     }
 
     fetchPost();
-  }, [id, navigate]);
+  }, [slug, navigate]);
+
 
   const handleShareOnLinkedIn = () => {
     const url = encodeURIComponent(window.location.href);

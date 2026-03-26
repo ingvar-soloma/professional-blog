@@ -46,7 +46,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/blog/:id" element={<PostDetails />} />
+                  <Route path="/blog/:slug" element={<PostDetails />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                 </Routes>
               </main>

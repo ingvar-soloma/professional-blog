@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Disallow admin panel
+Disallow: /admin
+
+# Sitemap
+Sitemap: https://ingvarsoloma.dev/sitemap.xml

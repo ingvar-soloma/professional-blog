@@ -28,6 +28,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const postSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
+  slug: z.string().min(3, "Slug must be at least 3 characters").regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase letters, numbers, and hyphens"),
   excerpt: z.string().min(10, "Excerpt must be at least 10 characters"),
   content: z.string().min(50, "Content must be at least 50 characters for quality research"),
   tags: z.array(z.string()),
@@ -37,6 +38,19 @@ const postSchema = z.object({
   created_at: z.any().optional()
 });
 
+const slugify = (text) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')     // Replace spaces with -
+    .replace(/[^\w-]+/g, '')   // Remove all non-word chars
+    .replace(/--+/g, '-')      // Replace multiple - with single -
+    .replace(/^-+/, '')        // Trim - from start of text
+    .replace(/-+$/, '');       // Trim - from end of text
+};
+
+
 export default function AdminDashboard() {
   const { user, isOwner, login, logout, loading: authLoading } = useAuth();
   const [posts, setPosts] = useState([]);
@@ -45,6 +59,7 @@ export default function AdminDashboard() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     excerpt: '',
     content: '',
     tags: '',
@@ -52,6 +67,7 @@ export default function AdminDashboard() {
     read_time: '',
     is_hidden: false
   });
+
   const [activeTab, setActiveTab] = useState('posts'); // 'posts' or 'generator'
   const [isPreview, setIsPreview] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -121,8 +137,9 @@ export default function AdminDashboard() {
       }
       setIsFormOpen(false);
       setEditingPost(null);
-      setFormData({ title: '', excerpt: '', content: '', tags: '', date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), read_time: '', is_hidden: false });
+      setFormData({ title: '', slug: '', excerpt: '', content: '', tags: '', date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), read_time: '', is_hidden: false });
       fetchPosts();
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         const messages = error.issues.map(e => e.message).join(", ");
@@ -139,6 +156,7 @@ export default function AdminDashboard() {
     setEditingPost(post);
     setFormData({
       title: post.title,
+      slug: post.slug || slugify(post.title),
       excerpt: post.excerpt,
       content: post.content,
       tags: post.tags.join(', '),
@@ -146,6 +164,7 @@ export default function AdminDashboard() {
       read_time: post.read_time,
       is_hidden: post.is_hidden || false
     });
+
     setIsFormOpen(true);
   };
 
@@ -358,8 +377,16 @@ export default function AdminDashboard() {
                     type="text"
                     required
                     value={formData.title}
-                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                    onChange={e => {
+                      const title = e.target.value;
+                      setFormData(prev => ({ 
+                        ...prev, 
+                        title, 
+                        slug: prev.slug === slugify(prev.title) || !prev.slug ? slugify(title) : prev.slug 
+                      }));
+                    }}
                     placeholder="Insight title..."
+
                     className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-800 px-6 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-bold"
                   />
                 </div>
@@ -374,6 +401,18 @@ export default function AdminDashboard() {
                     className="w-full bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-800 px-6 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-bold"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Slug (Readable URL)</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.slug}
+                  onChange={e => setFormData({ ...formData, slug: e.target.value })}
+                  placeholder="insight-title-slug"
+                  className="w-full bg-gray-50 dark:bg-slate-950/50 border border-gray-100 dark:border-slate-800 px-6 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-mono text-xs text-indigo-600 dark:text-indigo-400 font-bold"
+                />
               </div>
 
               <div className="space-y-2">
