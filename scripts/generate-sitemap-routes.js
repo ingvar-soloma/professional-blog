@@ -7,22 +7,33 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Read .env manually
-const envPath = path.resolve(__dirname, "../.env");
-const envContent = fs.readFileSync(envPath, "utf-8");
-const env = {};
-envContent.split("\n").forEach(line => {
-  const [key, value] = line.split("=");
-  if (key && value) env[key.trim()] = value.trim();
-});
+// Function to get env variable from process.env or .env file
+const getEnv = (key) => {
+  if (process.env[key]) return process.env[key];
+  
+  try {
+    const envPath = path.resolve(__dirname, "../.env");
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, "utf-8");
+      const lines = envContent.split("\n");
+      for (const line of lines) {
+        const [k, v] = line.split("=");
+        if (k && k.trim() === key) return v ? v.trim() : "";
+      }
+    }
+  } catch (err) {
+    // Ignore errors
+  }
+  return undefined;
+};
 
 const firebaseConfig = {
-  apiKey: env.VITE_FIREBASE_API_KEY,
-  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: env.VITE_FIREBASE_APP_ID
+  apiKey: getEnv("VITE_FIREBASE_API_KEY"),
+  authDomain: getEnv("VITE_FIREBASE_AUTH_DOMAIN"),
+  projectId: getEnv("VITE_FIREBASE_PROJECT_ID"),
+  storageBucket: getEnv("VITE_FIREBASE_STORAGE_BUCKET"),
+  messagingSenderId: getEnv("VITE_FIREBASE_MESSAGING_SENDER_ID"),
+  appId: getEnv("VITE_FIREBASE_APP_ID")
 };
 
 async function getRoutes() {
