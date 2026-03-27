@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  signInWithPopup, 
-  signOut, 
-  onAuthStateChanged 
+import {
+  signInWithRedirect,
+  getRedirectResult,
+  signOut,
+  onAuthStateChanged
 } from 'firebase/auth';
 import { auth, googleProvider } from '../lib/firebase';
 
@@ -16,7 +17,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const login = () => {
-    return signInWithPopup(auth, googleProvider);
+    return signInWithRedirect(auth, googleProvider);
   };
 
   const logout = () => {
@@ -26,6 +27,11 @@ export function AuthProvider({ children }) {
   const isOwner = user && ADMIN_EMAILS.includes(user.email);
 
   useEffect(() => {
+    // Handle redirect result if needed (e.g. for error handling)
+    getRedirectResult(auth).catch((error) => {
+      console.error("Redirect login error:", error);
+    });
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
