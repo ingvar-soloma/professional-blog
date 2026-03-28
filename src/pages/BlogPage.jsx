@@ -54,7 +54,7 @@ export default function BlogPage() {
       </Helmet>
       
       <Container>
-        <Stack gap={12}>
+        <Stack gap={20}>
           <header>
             <Stack gap={8}>
               <Stack vertical={false} align="end" justify="between" gap={6} wrap>
