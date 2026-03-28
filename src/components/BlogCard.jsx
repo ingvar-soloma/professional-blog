@@ -1,50 +1,64 @@
 import React from 'react';
-import { ChevronRight, Calendar, User, Clock } from 'lucide-react';
+import { ChevronRight, Calendar, User, Clock, Eye } from 'lucide-react';
+import {
+  Stack,
+  Heading,
+  Text,
+  Badge,
+  Card,
+  IconBox
+} from './primitives/SystemicEngine';
 
 export default function BlogCard({ post }) {
-  const { title, date, excerpt, author, readTime, tags } = post;
+  const { title, date, excerpt, author, read_time, tags, views } = post;
 
   return (
-    <article className="group bg-white dark:bg-slate-900 rounded-3xl p-8 border border-gray-100 dark:border-slate-800 shadow-xl dark:shadow-none hover:shadow-2xl dark:hover:border-indigo-900/50 hover:translate-y-[-8px] transition-all duration-500 relative overflow-hidden flex flex-col justify-between">
+    <Card interactive padding="8">
       <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <ChevronRight size={20} className="text-indigo-600" />
+        <ChevronRight size={18} className="text-red-600" />
       </div>
 
-      <div className="mb-6">
-        <div className="flex flex-wrap gap-2 mb-4">
-          {tags.map((tag, i) => (
-            <span 
-              key={i} 
-              className="px-3 py-1 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-        <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors uppercase tracking-tight leading-tight">
-          {title}
-        </h3>
-        <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed font-medium">
-          {excerpt}
-        </p>
-      </div>
+      <Stack gap={8}>
+        <Stack gap={4}>
+          <Heading level={3}>{title}</Heading>
+          
+          <Text muted size="sm">
+            {excerpt}
+          </Text>
 
-      <footer className="mt-8 pt-6 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-black text-gray-400 uppercase tracking-widest">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <Calendar size={12} className="text-indigo-400" />
-            <span>{date}</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Clock size={12} className="text-indigo-400" />
-            <span>{readTime} Read</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <User size={12} className="text-indigo-400" />
-          <span>{author}</span>
-        </div>
-      </footer>
-    </article>
+          <Stack vertical={false} wrap gap={2} className="pt-2">
+            {tags.map((tag, i) => (
+              <Badge key={i}>{tag}</Badge>
+            ))}
+          </Stack>
+        </Stack>
+
+        <footer className="pt-6 border-t border-white/5">
+          <Stack vertical={false} justify="between" align="center" fullWidth gap={4} wrap>
+            <Stack vertical={false} align="center" gap={4}>
+               <Stack vertical={false} align="center" gap={1.5}>
+                  <Calendar size={14} className="text-red-900" />
+                  <Text size="sm" mono muted>{date}</Text>
+               </Stack>
+                <Stack vertical={false} align="center" gap={1.5}>
+                  <Clock size={14} className="text-red-900" />
+                  <Text size="sm" mono muted>{read_time || '5 min'}</Text>
+                </Stack>
+                {views !== undefined && (
+                  <Stack vertical={false} align="center" gap={1.5}>
+                    <Eye size={14} className="text-red-900" />
+                    <Text size="sm" mono muted>{views}</Text>
+                  </Stack>
+                )}
+             </Stack>
+             
+             <Stack vertical={false} align="center" gap={1.5}>
+                <User size={14} className="text-red-900" />
+                <Text size="sm" mono muted>{author || 'Ihor S.'}</Text>
+             </Stack>
+          </Stack>
+        </footer>
+      </Stack>
+    </Card>
   );
 }

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
@@ -8,41 +8,34 @@ import AdminDashboard from './pages/AdminDashboard';
 import BlogPage from './pages/BlogPage';
 import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ExternalLink } from 'lucide-react';
+import {
+  Screen,
+  Background,
+  Section,
+  Container,
+  Stack,
+  Text,
+  GithubIcon
+} from './components/primitives/SystemicEngine';
 
 const queryClient = new QueryClient();
 
 export default function App() {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved) return saved === 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
-  });
-
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-  }, [isDarkMode]);
+    document.documentElement.classList.add('dark');
+  }, []);
 
   return (
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <Router>
           <AuthProvider>
-            <div className="min-h-screen bg-[#fafafa] dark:bg-slate-900 text-gray-900 dark:text-gray-100 font-sans antialiased selection:bg-indigo-600 selection:text-white scroll-smooth overflow-x-hidden transition-colors duration-500">
-              <Navbar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+            <Screen>
+              <Background />
+              <Navbar />
 
-              {/* Background decoration */}
-              <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px]"></div>
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-200/40 dark:bg-indigo-900/10 rounded-full blur-3xl opacity-50 animate-pulse"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-100/30 dark:bg-emerald-900/10 rounded-full blur-3xl opacity-40"></div>
-              </div>
-
-              <main className="relative z-10 pt-32 pb-24 max-w-6xl mx-auto px-6">
+              <main className="pt-20 w-full flex-1 flex flex-col">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/blog" element={<BlogPage />} />
@@ -51,10 +44,22 @@ export default function App() {
                 </Routes>
               </main>
 
-              <footer className="text-center py-12 text-[10px] font-black text-gray-300 dark:text-gray-600 uppercase tracking-[0.4em] transition-colors duration-500 mt-20">
-                <p>© {new Date().getFullYear()} IHOR SOLOMIANYI • LOGIC-FIRST BLOG ENGINE • Gdansk, Poland</p>
-              </footer>
-            </div>
+              <Section border>
+                <Container>
+                  <Stack vertical={false} justify="between" align="center" gap={8} wrap fullWidth>
+                    <Text mono muted>&copy; {new Date().getFullYear()} Ihor Solomianyi // Systemic Constructor</Text>
+                    <Stack vertical={false} gap={6}>
+                      <a href="https://github.com/ingvar-soloma" target="_blank" rel="noreferrer">
+                         <GithubIcon size={18} className="text-gray-700 hover:text-white transition-colors" />
+                      </a>
+                      <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://ingvarsoloma.dev" target="_blank" rel="noreferrer">
+                         <ExternalLink size={18} className="text-gray-700 hover:text-white transition-colors" />
+                      </a>
+                    </Stack>
+                  </Stack>
+                </Container>
+              </Section>
+            </Screen>
           </AuthProvider>
         </Router>
       </QueryClientProvider>
