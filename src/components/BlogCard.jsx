@@ -18,22 +18,22 @@ export default function BlogCard({ post }) {
         <ChevronRight size={18} className="text-red-600" />
       </div>
 
-      <Stack gap={8}>
-        <Stack gap={4}>
+      <Stack gap={12}>
+        <Stack gap={6}>
           <Heading level={3}>{title}</Heading>
           
           <Text muted size="sm">
             {excerpt}
           </Text>
 
-          <Stack vertical={false} wrap gap={2} className="pt-2">
+          <Stack vertical={false} wrap gap={2} className="pt-6">
             {tags.map((tag, i) => (
               <Badge key={i}>{tag}</Badge>
             ))}
           </Stack>
         </Stack>
 
-        <footer className="pt-6 border-t border-white/5">
+        <footer className="pt-8 border-t border-white/5">
           <Stack vertical={false} justify="between" align="center" fullWidth gap={4} wrap>
             <Stack vertical={false} align="center" gap={4}>
                <Stack vertical={false} align="center" gap={1.5}>
