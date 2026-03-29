@@ -217,7 +217,7 @@ const Text = ({ children, size = 'base', muted = false, mono = false, maxWidth =
 
   return (
     <p className={cn(
-      color || (muted ? "text-gray-500" : "text-gray-300"),
+      color || (muted ? "text-gray-400" : "text-gray-300"),
       sizeMap[size] || sizeMap.base,
       weight === 'medium' ? 'font-medium' : weightMap[weight],
       alignMap[align],
@@ -331,10 +331,10 @@ const Terminal = ({ logs = [] }) => (
         </span>
         <Text mono muted>Kernel Status</Text>
       </Stack>
-      <div className="space-y-2 opacity-60">
+      <div className="space-y-2 opacity-90">
         {logs.map((log, i) => (
-          <div key={i} className="font-mono text-[11px] text-red-500">
-            <span className="text-red-900/60 mr-2">[{i}]</span> {log}
+          <div key={i} className="font-mono text-[11px] text-red-400">
+            <span className="text-red-500/70 mr-2">[{i}]</span> {log}
           </div>
         ))}
       </div>

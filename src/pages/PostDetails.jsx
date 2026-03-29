@@ -432,7 +432,7 @@ function NanoTerminal({ post }) {
           {post.content}
         </ReactMarkdown>
       </div>
-      <div className="border-t border-white/10 bg-black/50 p-4 font-mono text-[9px] sm:text-[10px] tracking-tight text-gray-500 select-none z-30 shrink-0">
+      <div className="border-t border-white/10 bg-black/50 p-4 font-mono text-[9px] sm:text-[10px] tracking-tight text-gray-400 select-none z-30 shrink-0">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-2">
            <div className="flex gap-1.5"><span className="bg-white/10 px-1 text-white">^G</span> Get Help</div>
            <div className="flex gap-1.5"><span className="bg-white/10 px-1 text-white">^X</span> Exit</div>

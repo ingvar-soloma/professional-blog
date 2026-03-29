@@ -49,10 +49,10 @@ function AppContent() {
             <Stack vertical={false} justify="between" align="center" gap={8} wrap fullWidth>
               <Text mono muted>&copy; {new Date().getFullYear()} Ihor Solomianyi // Systemic Constructor</Text>
               <Stack vertical={false} gap={6}>
-                <a href="https://github.com/ingvar-soloma" target="_blank" rel="noreferrer">
+                <a href="https://github.com/ingvar-soloma" target="_blank" rel="noreferrer" aria-label="GitHub Profile">
                    <GithubIcon size={18} className="text-gray-700 hover:text-white transition-colors" />
                 </a>
-                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://ingvarsoloma.dev" target="_blank" rel="noreferrer">
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://ingvarsoloma.dev" target="_blank" rel="noreferrer" aria-label="Share on LinkedIn">
                    <ExternalLink size={18} className="text-gray-700 hover:text-white transition-colors" />
                 </a>
               </Stack>
