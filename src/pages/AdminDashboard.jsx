@@ -45,7 +45,8 @@ const postSchema = z.object({
   date: z.string(),
   read_time: z.string(),
   is_hidden: z.boolean(),
-  created_at: z.any().optional()
+  created_at: z.any().optional(),
+  updated_at: z.any().optional()
 });
 
 const slugify = (text) => {
@@ -54,7 +55,7 @@ const slugify = (text) => {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, '-')     // Replace spaces with -
-    .replace(/[^\w-]+/g, '')   // Remove all non-word chars
+    .replace(/[^a-z0-9-]+/g, '') // Remove all non-alphanumeric chars except -
     .replace(/--+/g, '-')      // Replace multiple - with single -
     .replace(/^-+/, '')        // Trim - from start of text
     .replace(/-+$/, '');       // Trim - from end of text
@@ -134,7 +135,8 @@ export default function AdminDashboard() {
       const postData = postSchema.parse({
         ...formData,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        created_at: editingPost ? editingPost.created_at : serverTimestamp()
+        created_at: editingPost ? editingPost.created_at : serverTimestamp(),
+        updated_at: serverTimestamp()
       });
 
       if (editingPost) {
