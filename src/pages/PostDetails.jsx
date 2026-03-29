@@ -13,8 +13,12 @@ import {
   ChevronLeft,
   Loader2,
   Share2,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Check
 } from 'lucide-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import {
   Section,
   Container,
@@ -203,6 +207,128 @@ export default function PostDetails() {
   );
 }
 
+const CodeBlock = ({ language, codeString, className }) => {
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopy = () => {
+    navigator.clipboard.writeText(codeString);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
+  return (
+    <Card padding="0" className="rounded-xl border-red-900/30 overflow-hidden relative group my-6" contentEditable={false}>
+      <div className="flex items-center justify-between px-4 py-2 bg-black/60 border-b border-red-900/30">
+        <span className="text-xs font-mono text-gray-400 font-bold uppercase tracking-widest">{language || 'text'}</span>
+        <button 
+          onClick={handleCopy}
+          className="text-gray-400 hover:text-white transition-colors"
+          title="Copy code"
+        >
+          {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+        </button>
+      </div>
+      <div className="text-sm">
+        <SyntaxHighlighter
+          language={language || 'text'}
+          style={vscDarkPlus}
+          customStyle={{ margin: 0, padding: '1rem', background: 'transparent' }}
+        >
+          {codeString}
+        </SyntaxHighlighter>
+      </div>
+    </Card>
+  );
+};
+
+const SlideDeckBlock = ({ rawContent }) => {
+  const [copied, setCopied] = useState(false);
+  
+  const getConfig = () => {
+    try {
+      const jsonStr = rawContent.match(/\{[\s\S]*\}/)?.[0] || rawContent;
+      return JSON.parse(jsonStr);
+    } catch {
+      return null;
+    }
+  };
+
+  const config = getConfig();
+
+  const handleCopy = () => {
+    if (config && config.code) {
+      navigator.clipboard.writeText(config.code);
+    } else {
+      navigator.clipboard.writeText(rawContent);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  if (!config) {
+    return (
+      <Card padding="6" className="rounded-none border-red-900/50" contentEditable={false}>
+        <Stack gap={4}>
+           <Badge>Architecture Error</Badge>
+           <pre className="overflow-x-auto text-xs opacity-70"><code>{rawContent}</code></pre>
+        </Stack>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="my-14 w-full flex flex-col items-center select-none relative group" contentEditable={false}>
+       <button 
+          onClick={handleCopy}
+          className="absolute -top-4 -right-4 z-50 p-3 bg-black/80 hover:bg-black text-gray-300 backdrop-blur-md rounded-2xl border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity shadow-xl"
+          title="Copy Code"
+       >
+          {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+       </button>
+       <div className="w-full max-w-[850px] transform scale-[0.85] sm:scale-100 origin-center transition-all duration-500">
+         <CodeSlide {...config} />
+       </div>
+    </div>
+  );
+};
+
+const markdownComponents = {
+  pre: ({ children }) => {
+    if (React.isValidElement(children)) {
+       const codeProps = children.props;
+       if (codeProps) {
+         const className = codeProps.className || '';
+         const match = /language-([\w-]+)/.exec(className);
+         const language = match ? match[1] : '';
+         const rawContent = String(codeProps.children).replace(/\n$/, '');
+
+         if (language === 'slide-deck' || language === 'slidedeck') {
+           return <SlideDeckBlock rawContent={rawContent} />;
+         }
+
+         return <CodeBlock language={language} codeString={rawContent} className={className} />;
+       }
+    }
+    return <pre>{children}</pre>;
+  },
+  code: ({ className, children, ...props }) => {
+    return <code className={`text-red-500 font-mono text-[0.8em] font-black px-1.5 py-0.5 bg-red-600/10 rounded-md border border-red-600/20 ${className || ''}`} {...props}>{children}</code>;
+  },
+  a: ({ node, children, ...props }) => {
+    return (
+      <a 
+        {...props} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="text-red-500 hover:text-red-400 underline decoration-red-500/30 underline-offset-4 transition-colors font-bold"
+        contentEditable={false}
+      >
+        {children}
+      </a>
+    );
+  }
+};
+
 function NanoTerminal({ post }) {
   const navigate = useNavigate();
   const containerRef = useRef(null);
@@ -267,7 +393,7 @@ function NanoTerminal({ post }) {
   }, [allSlugs, post.slug]);
 
   return (
-    <Card padding="0" className="bg-[#050505] border-white/10 rounded-none relative shadow-2xl overflow-hidden h-[80vh] flex flex-col">
+    <Card padding="0" className="bg-[#050505] border-white/10 rounded-none relative shadow-2xl overflow-hidden flex flex-col">
       <div className="bg-white/10 text-black px-4 py-1 flex justify-between font-mono text-[10px] sm:text-xs font-bold uppercase select-none z-30 shrink-0">
         <span>UW-Terminal 7.2</span>
         <span>File: {post.slug || 'untitled.md'}</span>
@@ -281,48 +407,13 @@ function NanoTerminal({ post }) {
       <div 
         ref={containerRef} contentEditable suppressContentEditableWarning spellCheck={false}
         onKeyUp={updateCursor} onKeyDown={handleShortcuts} onMouseUp={updateCursor} onFocus={updateCursor} onClick={updateCursor} onScroll={updateCursor}
-        className="flex-1 overflow-y-auto prose prose-invert prose-red max-w-none relative outline-none py-10 px-6 sm:px-12 md:px-16 font-mono caret-transparent prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-p:text-gray-400 prose-p:leading-relaxed prose-p:font-light prose-pre:p-0 prose-pre:bg-transparent prose-strong:text-white prose-strong:font-black prose-code:text-red-500 z-10"
+        className="flex-1 overflow-visible prose prose-invert prose-red max-w-none relative outline-none py-10 px-6 sm:px-12 md:px-16 font-mono caret-transparent prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-p:text-gray-400 prose-p:leading-relaxed prose-p:font-light prose-pre:p-0 prose-pre:bg-transparent prose-strong:text-white prose-strong:font-black prose-code:text-red-500 z-10"
       >
         <div className="absolute w-2.5 bg-red-600 animate-pulse z-20 shadow-[0_0_15px_rgba(220,38,38,0.7)] pointer-events-none transition-all duration-75"
           style={{ left: `${cursorRect.left}px`, top: `${cursorRect.top}px`, height: `${cursorRect.height}px` }}
         />
         <ReactMarkdown
-          components={{
-            pre: ({ children }) => <>{children}</>,
-            code({ node, inline, className, children, ...props }) {
-              const match = /language-([\w-]+)/.exec(className || '');
-              const language = match ? match[1] : '';
-              if (!inline && (language === 'slide-deck' || language === 'slidedeck')) {
-                try {
-                  const rawContent = String(children).trim().match(/\{[\s\S]*\}/)?.[0] || String(children).trim();
-                  const config = JSON.parse(rawContent);
-                  return (
-                    <div className="my-14 w-full flex flex-col items-center select-none" contentEditable={false}>
-                       <div className="w-full max-w-[850px] transform scale-[0.85] sm:scale-100 origin-center transition-all duration-500">
-                         <CodeSlide {...config} />
-                       </div>
-                    </div>
-                  );
-                } catch (e) {
-                  return (
-                    <Card padding="6" className="rounded-none border-red-900/50" contentEditable={false}>
-                      <Stack gap={4}>
-                         <Badge>Architecture Error</Badge>
-                         <pre className="overflow-x-auto text-xs opacity-70"><code>{children}</code></pre>
-                      </Stack>
-                    </Card>
-                  );
-                }
-              }
-              return !inline ? (
-                <Card padding="4" className="rounded-none border-red-900/30" contentEditable={false}>
-                  <pre className="overflow-x-auto text-xs font-mono leading-relaxed text-red-500/80"><code>{children}</code></pre>
-                </Card>
-              ) : (
-                <code className="text-red-500 font-mono text-xs px-1 bg-red-600/5 rounded-none border border-red-600/20" {...props}>{children}</code>
-              );
-            }
-          }}
+          components={markdownComponents}
         >
           {post.content}
         </ReactMarkdown>
