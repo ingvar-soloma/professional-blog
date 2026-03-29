@@ -148,7 +148,7 @@ const CodeSlide = React.forwardRef(({
             </div>
             <div className="flex items-center gap-2">
               <FileText size={12} className="opacity-30" />
-              <div className="text-[10px] font-mono font-bold text-white/40 tracking-tight">
+              <div className="text-[10px] font-mono font-bold text-white/60 tracking-tight">
                 {filename}
               </div>
             </div>

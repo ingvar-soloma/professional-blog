@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import PostDetails from './pages/PostDetails';
 import AdminDashboard from './pages/AdminDashboard';
 import BlogPage from './pages/BlogPage';
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider, Helmet } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ExternalLink } from 'lucide-react';
 import {
@@ -31,6 +31,11 @@ function AppContent() {
 
   return (
     <Screen>
+      <Helmet>
+        <title>Ihor Solomianyi | Senior Architect & Software Engineer Blog</title>
+        <meta name="description" content="Professional blog of Ihor Solomianyi, Senior Software Architect specializing in AI Integration, LLM pipelines, and building scalable high-load ecosystems." />
+      </Helmet>
+      
       <Background />
       <Navbar />
 
