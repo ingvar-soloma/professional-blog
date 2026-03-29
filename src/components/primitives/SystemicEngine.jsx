@@ -252,7 +252,7 @@ const Button = ({ label, hoverLabel, icon: Icon, variant = 'primary', size = 'md
     <Tag 
       {...props}
       className={cn(
-        "group inline-flex items-center gap-2.5 font-black uppercase tracking-[0.2em] rounded-2xl transition-all duration-300 active:scale-95",
+        "group inline-flex items-center gap-2.5 font-black uppercase tracking-[0.2em] rounded-2xl transition-colors duration-300 hover:-translate-y-0.5 active:scale-95 active:translate-y-0",
         variants[variant],
         sizes[size],
         className
@@ -322,6 +322,10 @@ const IconBox = ({ icon: Icon, color = 'red' }) => {
   return <Icon size={20} className={colorMap[color]} />;
 };
 
+const Skeleton = ({ className = '', width = 'w-full', height = 'h-4', rounded = 'rounded-xl' }) => (
+  <div className={cn("skeleton-shimmer", width, height, rounded, className)} />
+);
+
 const Terminal = ({ logs = [] }) => (
   <Card>
     <Stack gap={4}>
@@ -379,6 +383,7 @@ export {
   Card,
   Badge,
   IconBox,
+  Skeleton,
   Terminal,
   GithubIcon,
 };
