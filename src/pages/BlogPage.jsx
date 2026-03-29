@@ -51,6 +51,16 @@ export default function BlogPage() {
       <Helmet>
         <title>Architectural Registry | Ihor Solomianyi</title>
         <meta name="description" content="Technical deep-dives into LLM ecosystems, high-load infrastructure, and the physics of thought. Explore the registry of logic." />
+        <link rel="canonical" href="https://ingvarsoloma.dev/blog" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Architectural Registry | Ihor Solomianyi" />
+        <meta property="og:description" content="Technical deep-dives into LLM ecosystems, high-load infrastructure, and the physics of thought. Explore the registry of logic." />
+        <meta property="og:url" content="https://ingvarsoloma.dev/blog" />
+        <meta property="og:image" content="https://ingvarsoloma.dev/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Architectural Registry | Ihor Solomianyi" />
+        <meta name="twitter:description" content="Technical deep-dives into LLM ecosystems, high-load infrastructure, and the physics of thought." />
+        <meta name="twitter:image" content="https://ingvarsoloma.dev/og-image.png" />
       </Helmet>
       
       <Container>
