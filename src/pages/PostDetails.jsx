@@ -128,6 +128,20 @@ export default function PostDetails() {
       <Helmet>
         <title>{post.title} | Ihor Solomianyi</title>
         <meta name="description" content={post.excerpt || post.content.substring(0, 160)} />
+        <link rel="canonical" href={`https://ingvarsoloma.dev/blog/${post.slug || post.id}`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={`${post.title} | Ihor Solomianyi`} />
+        <meta property="og:description" content={post.excerpt || post.content.substring(0, 160)} />
+        <meta property="og:url" content={`https://ingvarsoloma.dev/blog/${post.slug || post.id}`} />
+        <meta property="og:image" content={post.image || "https://ingvarsoloma.dev/og-image.png"} />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${post.title} | Ihor Solomianyi`} />
+        <meta name="twitter:description" content={post.excerpt || post.content.substring(0, 160)} />
+        <meta name="twitter:image" content={post.image || "https://ingvarsoloma.dev/og-image.png"} />
       </Helmet>
 
       <Container>
